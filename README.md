@@ -56,7 +56,7 @@ Deletes an existing GitHub Enterprise Organization along with all contents.
 ## Example usage
 
 ```
-- name: Create temporary organization
+- name: Delete temporary organization
   uses: tjcorr/gha-manage-orgs/delete-org@main
   with:
     admin-pat: ${{ secrets.ADMIN_PAT }}
