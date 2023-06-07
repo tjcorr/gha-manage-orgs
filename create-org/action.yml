@@ -1,0 +1,80 @@
+name: 'Create a GitHub Organization'
+
+inputs:
+  admin-pat:  
+    description: 'A personal access token with [admin:enterprise,user:email,read:user] scopes'
+    required: true
+  enterprise: 
+    description: 'The slug of the enterprise to create the organization in'
+    required: true
+  org:
+    description: 'The name of the organization to create (this must be globally unique)'
+    required: true
+  admin:
+    description: 'The login of the admin user for the organization'
+    required: true
+    
+runs:
+  using: "composite"
+  steps:
+    - name: Print details
+      shell: bash
+      run: echo "Creating organization $ORG in $SLUG for $ADMIN"
+      env:
+        ORG: ${{ inputs.org }}
+        SLUG: ${{ inputs.enterprise }}
+        ADMIN: ${{ inputs.admin }}
+
+    - name: Get Enterprise ID
+      id: get-enterprise-id
+      shell: bash
+      run: |
+        echo "ENTERPRISE_ID=$( \
+          curl -s -H "Authorization: bearer $TOKEN" -X POST -d " \
+            { \
+              \"query\": \"query { enterprise(slug: \\\"$SLUG\\\") { id }}\" \
+            } \
+          " https://api.github.com/graphql | jq -r '.data.enterprise.id' \
+        )" >> $GITHUB_OUTPUT
+      env:
+        TOKEN: ${{ inputs.admin-pat }}
+        SLUG: ${{ inputs.enterprise }}
+        
+    - name: Get Admin Email
+      id: get-admin-email
+      shell: bash
+      run: |
+        echo "ADMIN_EMAIL=$( \
+          curl -s -H "Authorization: bearer $TOKEN" -X POST -d " \
+            { \
+              \"query\": \"query { viewer { email }}\" \
+            } \
+          " https://api.github.com/graphql | jq -r '.data.viewer.email' \
+        )" >> $GITHUB_OUTPUT
+      env:
+        TOKEN: ${{ inputs.admin-pat }}
+
+    - name: Create Organization
+      shell: bash
+      run: |
+        curl -s -H "Authorization: bearer $TOKEN" -X POST -d " \
+          { \
+            \"query\": \"mutation { createEnterpriseOrganization ( \
+              input: { \
+                enterpriseId: \\\"$ENT_ID\\\", \
+                login: \\\"$ORG\\\", \
+                profileName: \\\"$DESC\\\", \
+                billingEmail: \\\"$EMAIL\\\", \
+                adminLogins: \\\"$ADMIN\\\" \
+              } \
+            ) { clientMutationId }}\" \
+          } \
+        " https://api.github.com/graphql
+      env:
+          TOKEN: ${{ inputs.admin-pat }}
+          ENT_ID: ${{ steps.get-enterprise-id.outputs.ENTERPRISE_ID }}
+          ORG: ${{ inputs.org }}
+          DESC: ${{ inputs.desc }}
+          EMAIL: ${{ steps.get-admin-email.outputs.ADMIN_EMAIL }}
+          ADMIN: ${{ inputs.admin }}
+  

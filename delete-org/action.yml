@@ -1,0 +1,29 @@
+name: 'Delete a GitHub Organization'
+
+inputs:
+  admin-pat:  
+    description: 'A personal access token with admin:org scope'
+    required: true
+  org:
+    description: 'The name of the organization to delete'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Print details
+      shell: bash
+      run: |
+        echo "Deleting organization: $ORG"
+      env:
+        ORG: ${{ inputs.org }}
+
+    - name: Delete Organization
+      shell: bash
+      run: |
+        curl -fX DELETE \
+          -H "Authorization: Bearer $TOKEN" \
+          https://api.github.com/orgs/$ORG
+      env:
+        TOKEN: ${{ inputs.admin-pat }}
+        ORG: ${{ inputs.org }}
