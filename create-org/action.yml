@@ -77,7 +77,7 @@ runs:
               } \
             ) { clientMutationId }}\" \
           } \
-        " https://api.github.com/graphql | jq .errors | grep . && exit 1 || exit 0
+        " https://api.github.com/graphql | jq -e 'has("errors") | not' 
       env:
           TOKEN: ${{ inputs.admin-pat }}
           ENT_ID: ${{ steps.get-enterprise-id.outputs.ENTERPRISE_ID }}
