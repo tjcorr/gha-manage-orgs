@@ -54,10 +54,18 @@ runs:
       env:
         TOKEN: ${{ inputs.admin-pat }}
 
+    - name: Create list of org admins
+      id: org-admin-string
+      shell: bash
+      run: |
+        echo "ADMIN_LIST=$(echo $ADMINS | tr ',' '\n' | sed 's/\"//g' | sed 's/^/\"/g' | sed 's/$/\"/g' | awk 'ORS=", ",""{print}' | sed 's/, $//g' | sed 's/^/[/' | sed 's/$/]/' | sed 's/"/\\"/g')" >> $GITHUB_OUTPUT
+      env:
+        ADMINS: ${{ inputs.admin }}
+
     - name: Create Organization
       shell: bash
       run: |
-        curl -s -H "Authorization: bearer $TOKEN" -X POST -d " \
+        result=$(curl -s -H "Authorization: bearer $TOKEN" -X POST -d " \
           { \
             \"query\": \"mutation { createEnterpriseOrganization ( \
               input: { \
@@ -65,16 +73,27 @@ runs:
                 login: \\\"$ORG\\\", \
                 profileName: \\\"$DESC\\\", \
                 billingEmail: \\\"$EMAIL\\\", \
-                adminLogins: \\\"$ADMIN\\\" \
+                adminLogins: $ADMIN \
               } \
             ) { clientMutationId }}\" \
           } \
-        " https://api.github.com/graphql
+        " https://api.github.com/graphql)
+        
+        echo $result
+        
+        errors=$(echo $result | jq -r '.errors')
+
+        if [ "$errors" != "null" ] && [ "$errors" != "[]" ]; then
+            echo "Errors found: $errors"
+            exit 1
+        else
+            exit 0
+        fi
       env:
           TOKEN: ${{ inputs.admin-pat }}
           ENT_ID: ${{ steps.get-enterprise-id.outputs.ENTERPRISE_ID }}
           ORG: ${{ inputs.org }}
           DESC: ${{ inputs.desc }}
           EMAIL: ${{ steps.get-admin-email.outputs.ADMIN_EMAIL }}
-          ADMIN: ${{ inputs.admin }}
+          ADMIN: ${{ steps.org-admin-string.outputs.ADMIN_LIST }}
   
