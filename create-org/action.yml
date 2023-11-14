@@ -93,5 +93,5 @@ runs:
           ORG: ${{ inputs.org }}
           DESC: ${{ inputs.desc }}
           EMAIL: ${{ steps.get-admin-email.outputs.ADMIN_EMAIL }}
-          ADMIN: ${{ steps.org-admin-string.ouputs.ADMIN_LIST }}
+          ADMIN: ${{ steps.org-admin-string.outputs.ADMIN_LIST }}
   
