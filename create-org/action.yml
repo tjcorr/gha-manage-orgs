@@ -54,6 +54,14 @@ runs:
       env:
         TOKEN: ${{ inputs.admin-pat }}
 
+    - name: Create list of org admins
+      id: org-admin-string
+      shell: bash
+      run: |
+        echo "ADMIN_LIST=$(echo $ADMINS | tr ',' '\n' | sed 's/\"//g' | sed 's/^/\"/g' | sed 's/$/\"/g' | awk 'ORS=", ",""{print}' | sed 's/, $//g' | sed 's/^/[/' | sed 's/$/]/')" >> $GITHUB_OUTPUT
+      env:
+        ADMINS: ${{ inputs.admin }}
+
     - name: Create Organization
       shell: bash
       run: |
@@ -76,5 +84,5 @@ runs:
           ORG: ${{ inputs.org }}
           DESC: ${{ inputs.desc }}
           EMAIL: ${{ steps.get-admin-email.outputs.ADMIN_EMAIL }}
-          ADMIN: ${{ inputs.admin }}
+          ADMIN: ${{ steps.org-admin-string.ouputs.ADMIN_LIST }}
   
