@@ -30,7 +30,7 @@ runs:
       shell: bash
       run: |
         echo "ENTERPRISE_ID=$( \
-          curl -s -H "Authorization: bearer $TOKEN" -X POST -d " \
+          curl --fail-with-body -s -H "Authorization: bearer $TOKEN" -X POST -d " \
             { \
               \"query\": \"query { enterprise(slug: \\\"$SLUG\\\") { id }}\" \
             } \
