@@ -73,7 +73,7 @@ runs:
                 login: \\\"$ORG\\\", \
                 profileName: \\\"$DESC\\\", \
                 billingEmail: \\\"$EMAIL\\\", \
-                adminLogins: \\\"$ADMIN\\\" \
+                adminLogins: $ADMIN \
               } \
             ) { clientMutationId }}\" \
           } \
