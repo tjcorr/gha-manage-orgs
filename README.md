@@ -22,7 +22,7 @@ Creates a new GitHub Enterprise Organization.
 
 #### `admin`
 
-**Required** The login of the admin user for the organization.
+**Required** A comma separated list of github handles who should be made admins of the organization (e.g. `tjcorr` or `tjcorr,otherhandle`).
 
 ## Example usage
 
