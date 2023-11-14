@@ -79,6 +79,8 @@ runs:
           } \
         " https://api.github.com/graphql)
         
+        echo $result
+        
         errors=$(echo $result | jq -r '.errors')
 
         if [ "$errors" != "null" ] && [ "$errors" != "[]" ]; then
