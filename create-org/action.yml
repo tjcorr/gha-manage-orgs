@@ -58,7 +58,7 @@ runs:
       id: org-admin-string
       shell: bash
       run: |
-        echo "ADMIN_LIST=$(echo $ADMINS | tr ',' '\n' | sed 's/\"//g' | sed 's/^/\"/g' | sed 's/$/\"/g' | awk 'ORS=", ",""{print}' | sed 's/, $//g' | sed 's/^/[/' | sed 's/$/]/')" >> $GITHUB_OUTPUT
+        echo "ADMIN_LIST=$(echo $ADMINS | tr ',' '\n' | sed 's/\"//g' | sed 's/^/\"/g' | sed 's/$/\"/g' | awk 'ORS=", ",""{print}' | sed 's/, $//g' | sed 's/^/[/' | sed 's/$/]/' | sed 's/"/\\"/g')" >> $GITHUB_OUTPUT
       env:
         ADMINS: ${{ inputs.admin }}
 
