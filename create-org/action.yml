@@ -45,7 +45,7 @@ runs:
       shell: bash
       run: |
         echo "ADMIN_EMAIL=$( \
-          curl -s -H "Authorization: bearer $TOKEN" -X POST -d " \
+          curl --fail-with-body -s -H "Authorization: bearer $TOKEN" -X POST -d " \
             { \
               \"query\": \"query { viewer { email }}\" \
             } \
@@ -65,7 +65,7 @@ runs:
     - name: Create Organization
       shell: bash
       run: |
-        curl -s -H "Authorization: bearer $TOKEN" -X POST -d " \
+        curl --fail-with-body -s -H "Authorization: bearer $TOKEN" -X POST -d " \
           { \
             \"query\": \"mutation { createEnterpriseOrganization ( \
               input: { \
