@@ -2,6 +2,36 @@
 
 A series of composite actions to simplifiy the management of GitHub Enterprise Organizations.
 
+## add-user
+
+Adds users to an existing GitHub organization.
+
+### Inputs
+
+#### `admin-pat`
+
+**Required** A personal access token with `[admin:org]` scope.
+
+#### `org`
+
+**Required** The name of the organization to invite users to.
+
+#### `users`
+
+**Required** A comma separated list of github handles who should be made admins of the organization (e.g. `tjcorr` or `tjcorr,otherhandle`).
+
+## Example usage
+
+```
+- name: Invite users
+  uses: tjcorr/gha-manage-orgs/add-user@main
+  with:
+    admin-pat: ${{ secrets.ADMIN_PAT }}
+    org: "myuniqueorg"
+    users: "tjcorr,otherhandle"
+```
+
+
 ## create-org
 
 Creates a new GitHub Enterprise Organization.

@@ -1,0 +1,68 @@
+name: 'Invite a list of users to a GitHub Organization'
+
+inputs:
+  admin-pat:  
+    description: 'A personal access token with [admin:org] scope'
+    required: true
+  org:
+    description: 'The name of the organization to invite users to'
+    required: true
+  users:
+    description: 'A comma separated list of github handles to add to the organization'
+    required: true
+    
+runs:
+  using: "composite"
+  steps:
+    - name: Print details
+      shell: bash
+      run: echo "Inviting $USERS to organization $ORG"
+      env:
+        ORG: ${{ inputs.org }}
+        USERS: ${{ inputs.users }}
+        
+    - name: Invite users
+      uses: actions/github-script@v7
+      with:
+        github-token: ${{ inputs.admin-pat }}
+        script: |
+          const users = '${{ inputs.users }}'.split(',');
+          const org = '${{ inputs.org }}';
+          const errors = [];
+          for (const user of users) {
+            console.log(`Adding user ${user} ...`)
+            try {
+              const user_obj = await github.rest.users.getByUsername({
+                username: user
+              })
+              
+            try {
+                const orgMember = await github.rest.orgs.getMembershipForUser({
+                  org: org,
+                  username: user
+                });
+
+                if (orgMember.data.state == 'pending') {
+                  console.log(`  user has a pending invite to org skipping`)
+                } else {
+                  console.log(`  user already in org skipping`)
+                }
+              } catch (error) {
+                if (error.status === 404) {
+                  console.log(`  creating invite`)
+
+                  await github.rest.orgs.createInvitation({
+                    org: org,
+                    invitee_id: user_obj.data.id
+                  });
+                } else {
+                  errors.push(`Error with user ${user}: ${error.message}`);
+                }
+              }
+            } catch (error) {
+              errors.push(`Error inviting user ${user}: ${error.message}`);
+            }
+          }
+          if (errors.length > 0) {
+            throw new Error(errors.join('\n'));
+          }
