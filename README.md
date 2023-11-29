@@ -2,7 +2,7 @@
 
 A series of composite actions to simplifiy the management of GitHub Enterprise Organizations.
 
-## add-user
+## add-users
 
 Adds users to an existing GitHub organization.
 
@@ -24,7 +24,7 @@ Adds users to an existing GitHub organization.
 
 ```
 - name: Invite users
-  uses: tjcorr/gha-manage-orgs/add-user@main
+  uses: tjcorr/gha-manage-orgs/add-users@main
   with:
     admin-pat: ${{ secrets.ADMIN_PAT }}
     org: "myuniqueorg"
