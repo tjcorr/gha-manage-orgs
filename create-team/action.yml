@@ -16,7 +16,7 @@ runs:
   steps:
     - name: Print details
       shell: bash
-      run: echo "Creating team $TEAM to organization $ORG"
+      run: echo "Creating team $TEAM in organization $ORG"
       env:
         ORG: ${{ inputs.org }}
         TEAM: ${{ inputs.name }}
@@ -26,12 +26,11 @@ runs:
       with:
         github-token: ${{ inputs.admin-pat }}
         script: |
-          const users = '${{ inputs.users }}'.split(',');
           const org = '${{ inputs.org }}';
-          const team-name = '${{ inputs.name }}';
+          const name = '${{ inputs.name }}';
           
           # Create a GitHub team
           const team = await github.rest.teams.create({
             org: org,
-            name: team-name
+            name: name
           });
