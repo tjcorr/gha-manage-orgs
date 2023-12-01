@@ -88,6 +88,10 @@ Create a team in a GitHub organization.
 
 **Required** The name of the team to create.
 
+#### `visibility`
+
+'The visibility of the team (secret or closed). Default value is closed.'
+
 ## Example usage
 
 ```

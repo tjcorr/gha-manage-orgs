@@ -10,6 +10,9 @@ inputs:
   name:
     description: 'The name of the team to create'
     required: true
+  visibility:
+    description: 'The visibility of the team (secret or closed)'
+    default: closed
 
 runs:
   using: "composite"
@@ -28,11 +31,13 @@ runs:
         script: |
           const org = '${{ inputs.org }}';
           const name = '${{ inputs.name }}';
+          const visibility = '${{ inputs.visibility }}';
          
           try {
             await github.rest.teams.create({
               org: org,
-              name: name
+              name: name,
+              privacy: visibility
             });
           } catch (error) {
             console.log(`Error creating team ${name}: ${error.message}`);
