@@ -34,48 +34,56 @@ runs:
           const teams = '${{ inputs.team-names }}'.split(',');
 
           const errors = [];
+
           for (const user of users) {
-            console.log(`Adding user ${user} ...`)
-            try {
-              const user_obj = await github.rest.users.getByUsername({
-                username: user
-              })
-              
-            try {
-                const orgMember = await github.rest.orgs.getMembershipForUser({
-                  org: org,
-                  username: user
-                });
+              console.log(`Adding user ${user} ...`)
+              try {
+                  const user_obj = await github.rest.users.getByUsername({
+                      username: user
+                  })
 
-                if (orgMember.data.state == 'pending') {
-                  console.log(`  user has a pending invite to org skipping`)
-                } else {
-                  console.log(`  user already in org skipping`)
-                }
-              } catch (error) {
-                if (error.status === 404) {
-                  console.log(`  creating invite`)
+                  try {
+                      const orgMember = await github.rest.orgs.getMembershipForUser({
+                          org: org,
+                          username: user
+                      });
 
-                  await github.rest.orgs.createInvitation({
-                    org: org,
-                    invitee_id: user_obj.data.id
-                  });
+                      if (orgMember.data.state == 'pending') {
+                          console.log(`  user has a pending invite to org skipping`)
+                      } else {
+                          console.log(`  user already in org skipping`)
+                      }
+                  } catch (error) {
+                      if (error.status === 404) {
+                          console.log(`  creating invite`)
 
-                  for (const team of teams) {
-                    await github.rest.teams.addOrUpdateMembershipForUserInOrg({
-                      org: org,
-                      team_slug: team,
-                      username: user,
-                    });
+                          await github.rest.orgs.createInvitation({
+                              org: org,
+                              invitee_id: user_obj.data.id
+                          });
+                      } else {
+                          errors.push(`Error with user ${user}: ${error.message}`);
+                      }
                   }
-                } else {
-                  errors.push(`Error with user ${user}: ${error.message}`);
-                }
+
+                  try {
+                      for (const team of teams) {
+                          console.log(`  adding user to team ${team}`)
+
+                          await github.rest.teams.addOrUpdateMembershipForUserInOrg({
+                              org: org,
+                              team_slug: team,
+                              username: user,
+                          });
+                      }
+                  } catch {
+                      errors.push(`Error inviteing user ${user} to team ${team}: ${error.message}`);
+                  }
+              } catch (error) {
+                  errors.push(`Error inviting user ${user}: ${error.message}`);
               }
-            } catch (error) {
-              errors.push(`Error inviting user ${user}: ${error.message}`);
-            }
           }
+
           if (errors.length > 0) {
-            throw new Error(errors.join('\n'));
+              throw new Error(errors.join('\n'));
           }
