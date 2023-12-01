@@ -20,6 +20,10 @@ Adds users to an existing GitHub organization.
 
 **Required** A comma separated list of github handles who should be made admins of the organization (e.g. `tjcorr` or `tjcorr,otherhandle`).
 
+#### `team-names`
+
+A comma separated list of team slugs to invite the user to (e.g. `myteam` or `myteam,otheteam`).
+
 ## Example usage
 
 ```
@@ -65,6 +69,40 @@ Creates a new GitHub Enterprise Organization.
     org: "myuniqueorg"
     admin: ${{ github.actor }}
 ```
+
+## create-team
+
+Create a team in a GitHub organization.
+
+### Inputs
+
+#### `admin-pat`
+
+**Required** A personal access token with `[admin:org]` scope.
+
+#### `org`
+
+**Required** The name of the organization to invite users to.
+
+#### `name`
+
+**Required** The name of the team to create.
+
+#### `visibility`
+
+'The visibility of the team (secret or closed). Default value is closed.'
+
+## Example usage
+
+```
+- name: Create team
+  uses: tjcorr/gha-manage-orgs/create-team@main
+  with:
+    admin-pat: ${{ secrets.ADMIN_PAT }}
+    org: "myuniqueorg"
+    team-name: "MyTeam"
+```
+
 
 ## delete-org
 
