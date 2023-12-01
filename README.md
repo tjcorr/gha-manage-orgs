@@ -84,7 +84,7 @@ Create a team in a GitHub organization.
 
 **Required** The name of the organization to invite users to.
 
-#### `team-name`
+#### `name`
 
 **Required** The name of the team to create.
 

@@ -7,7 +7,7 @@ inputs:
   org:
     description: 'The name of the organization to create the team in'
     required: true
-  team-name:
+  name:
     description: 'The name of the team to create'
     required: true
 
@@ -19,7 +19,7 @@ runs:
       run: echo "Creating team $TEAM to organization $ORG"
       env:
         ORG: ${{ inputs.org }}
-        TEAM: ${{ inputs.team-name }}
+        TEAM: ${{ inputs.name }}
         
     - name: Invite users
       uses: actions/github-script@v7
@@ -28,7 +28,7 @@ runs:
         script: |
           const users = '${{ inputs.users }}'.split(',');
           const org = '${{ inputs.org }}';
-          const team-name = '${{ inputs.team-name }}';
+          const team-name = '${{ inputs.name }}';
           
           # Create a GitHub team
           const team = await github.rest.teams.create({
