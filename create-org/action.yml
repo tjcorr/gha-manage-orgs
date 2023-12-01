@@ -6,7 +6,7 @@ inputs:
     required: true
   enterprise: 
     description: 'The slug of the enterprise to create the organization in'
-    required: truea
+    required: true
   org:
     description: 'The name of the organization to create (this must be globally unique)'
     required: true
