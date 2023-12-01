@@ -10,6 +10,9 @@ inputs:
   users:
     description: 'A comma separated list of github handles to add to the organization'
     required: true
+  team-names:
+    description: 'The slug of the team to invite users to'
+
     
 runs:
   using: "composite"
@@ -28,6 +31,8 @@ runs:
         script: |
           const users = '${{ inputs.users }}'.split(',');
           const org = '${{ inputs.org }}';
+          const teams = '${{ inputs.team-names }}'.split(',');
+
           const errors = [];
           for (const user of users) {
             console.log(`Adding user ${user} ...`)
@@ -55,6 +60,14 @@ runs:
                     org: org,
                     invitee_id: user_obj.data.id
                   });
+
+                  for (const team of teams) {
+                    await rest.teams.addOrUpdateMembershipForUserInOrg({
+                      org: org,
+                      team_slug: team,
+                      username: user,
+                    });
+                  }
                 } else {
                   errors.push(`Error with user ${user}: ${error.message}`);
                 }
