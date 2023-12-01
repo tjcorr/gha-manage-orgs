@@ -62,7 +62,7 @@ runs:
                   });
 
                   for (const team of teams) {
-                    await rest.teams.addOrUpdateMembershipForUserInOrg({
+                    await github.rest.teams.addOrUpdateMembershipForUserInOrg({
                       org: org,
                       team_slug: team,
                       username: user,
