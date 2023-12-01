@@ -33,6 +33,25 @@ runs:
           const name = '${{ inputs.name }}';
           const visibility = '${{ inputs.visibility }}';
          
+          console.log(`Creating team ${name} ...`);
+
+          try {
+            const existingTeam = await github.rest.teams.getByName({
+              org: org,
+              team_slug: name
+            });
+
+            if (existingTeam.data) {
+              console.log(`   skipping team already exists.`);
+              return;
+            }
+          } catch (error) {
+            if (error.status !== 404) {
+              console.log(`Error checking for team ${name}: ${error.message}`);
+              throw error;
+            }
+          }
+
           try {
             await github.rest.teams.create({
               org: org,
@@ -41,4 +60,5 @@ runs:
             });
           } catch (error) {
             console.log(`Error creating team ${name}: ${error.message}`);
+            throw error;
           }
