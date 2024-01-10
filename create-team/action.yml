@@ -1,4 +1,4 @@
-name: 'Invite a list of users to a GitHub Organization'
+name: 'Create a Team within a GitHub Organization'
 
 inputs:
   admin-pat:  
@@ -24,7 +24,7 @@ runs:
         ORG: ${{ inputs.org }}
         TEAM: ${{ inputs.name }}
         
-    - name: Invite users
+    - name: Create Team
       uses: actions/github-script@v7
       with:
         github-token: ${{ inputs.admin-pat }}

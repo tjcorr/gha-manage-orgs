@@ -29,7 +29,7 @@ runs:
       with:
         github-token: ${{ inputs.admin-pat }}
         script: |
-          const users = '${{ inputs.users }}'.split(',');
+          const users = '${{ inputs.users }}'.replace(/\s/g, '').split(',');
           const org = '${{ inputs.org }}';
           const teams = '${{ inputs.team-names }}'.split(',');
 
