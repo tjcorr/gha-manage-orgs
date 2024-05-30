@@ -68,13 +68,15 @@ runs:
 
                   try {
                       for (const team of teams) {
-                          console.log(`  adding user to team ${team}`)
-
-                          await github.rest.teams.addOrUpdateMembershipForUserInOrg({
-                              org: org,
-                              team_slug: team,
-                              username: user,
-                          });
+                          if (team !== "") {
+                            console.log(`  adding user to team ${team}`)
+  
+                            await github.rest.teams.addOrUpdateMembershipForUserInOrg({
+                                org: org,
+                                team_slug: team,
+                                username: user,
+                            });
+                          }
                       }
                   } catch {
                       errors.push(`Error inviteing user ${user} to team ${team}: ${error.message}`);
